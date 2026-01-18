@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Musophobia",
+  "version": "1.0.0",
+  "description": "Vim-style keyboard navigation for the browser",
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ]
+}

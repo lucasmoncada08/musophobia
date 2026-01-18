@@ -8,11 +8,7 @@ const __dirname = path.dirname(__filename);
 export default {
   mode: 'development', // Change to 'production' for production builds
   entry: {
-    // Add your entry points here
-    // Example:
-    // background: './src/background.ts',
-    // content: './src/content.ts',
-    // popup: './src/popup.ts',
+    content: './src/content.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -34,10 +30,7 @@ export default {
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        // Add files to copy to dist folder
-        // Example:
-        // { from: 'manifest.json', to: 'manifest.json' },
-        // { from: 'src/popup.html', to: 'popup.html' },
+        { from: 'manifest.json', to: 'manifest.json' },
       ],
     }),
   ],
