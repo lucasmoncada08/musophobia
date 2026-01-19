@@ -1,13 +1,55 @@
-import { getScrollAmount } from './scroll';
+import { SmoothScroller } from './smoothScroll';
 import { isInputElement } from './isInputElement';
 
-document.addEventListener('keydown', (e) => {
-  if (isInputElement(e.target as Element)) {
-    return;
-  }
+// Tuning constants
+const TAP_AMOUNT = 50;         // px per tap
+const HOLD_VELOCITY = 800;     // px per second while holding
+const LERP_FACTOR = 0.2;       // interpolation factor (higher = snappier)
 
-  const scrollAmount = getScrollAmount(e.key);
-  if (scrollAmount !== null) {
-    window.scrollBy(0, scrollAmount);
+const scroller = new SmoothScroller({
+  scrollTo: (y) => window.scrollTo(0, y),
+  getScrollY: () => window.scrollY,
+  tapAmount: TAP_AMOUNT,
+  holdVelocity: HOLD_VELOCITY,
+  lerpFactor: LERP_FACTOR,
+});
+
+let animating = false;
+let lastTime = 0;
+
+function animate(currentTime: number) {
+  const deltaMs = lastTime ? currentTime - lastTime : 16;
+  lastTime = currentTime;
+
+  scroller.update(deltaMs);
+
+  // Continue if still holding or still animating toward target
+  if (scroller.isHolding() || scroller.isAnimating()) {
+    requestAnimationFrame(animate);
+  } else {
+    animating = false;
+    lastTime = 0;
   }
+}
+
+function startAnimating() {
+  if (!animating) {
+    animating = true;
+    lastTime = 0;
+    requestAnimationFrame(animate);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (isInputElement(e.target as Element)) return;
+  if (e.key !== 'j' && e.key !== 'k') return;
+
+  scroller.keyDown(e.key);
+  startAnimating();
+});
+
+document.addEventListener('keyup', (e) => {
+  if (e.key !== 'j' && e.key !== 'k') return;
+
+  scroller.keyUp(e.key);
 });

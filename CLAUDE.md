@@ -1,5 +1,13 @@
 # Musophobia Development Guidelines
 
+## Current Development
+See `docs/DEVELOPMENT.md` for:
+- Current slice and requirements
+- Next steps (ordered)
+- Open questions and decisions
+
+Check this file before starting work and update it as tasks are completed.
+
 ## Development Philosophy
 
 ### Minimal Slices
@@ -18,6 +26,13 @@
 - Framework: Vitest
 - Spike first to understand browser APIs and extension interfaces
 - Then write tests with proper mocks
+
+## Before Building
+Always run these checks before `npm run build`:
+1. `npx tsc --noEmit` - Type check all files
+2. `npm test` - Run all tests
+
+Do not proceed with build if either fails.
 
 ## Project Structure
 ```
