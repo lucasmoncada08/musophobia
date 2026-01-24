@@ -1,6 +1,6 @@
 # Musophobia
 
-A Vim-style keyboard navigation extension for Microsoft Edge. Built as an alternative to Vimium C for environments where that extension is blocked.
+A Vim-style keyboard navigation extension for Microsoft Edge. Built as an alternative to Vimium C for environments where that extension is blocked, therefore enabling a safe way to use this functionality.
 
 > **Status:** Early prototype - core scrolling and help menu implemented, more features in progress.
 
