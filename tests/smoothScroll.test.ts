@@ -181,6 +181,44 @@ describe('SmoothScroller', () => {
     });
   });
 
+  describe('scrollTo (absolute position)', () => {
+    it('sets target to absolute position', () => {
+      scroller.scrollTo(1000);
+      expect(scroller.getTarget()).toBe(1000);
+    });
+
+    it('sets target to zero for top of page', () => {
+      // Simulate being scrolled down first
+      scroller.scrollBy(500);
+      expect(scroller.getTarget()).toBe(500);
+
+      scroller.scrollTo(0);
+      expect(scroller.getTarget()).toBe(0);
+    });
+
+    it('uses smooth animation after scrollTo', () => {
+      scroller.scrollTo(100);
+
+      expect(scroller.isAnimating()).toBe(true);
+
+      scroller.update(16);
+      expect(mockScrollTo).toHaveBeenCalled();
+    });
+
+    it('works when already scrolled', () => {
+      const scrollingScroller = new SmoothScroller({
+        scrollTo: mockScrollTo,
+        getScrollY: () => 500,
+        tapAmount: TAP_AMOUNT,
+        holdVelocity: HOLD_VELOCITY,
+        lerpFactor: LERP_FACTOR,
+      });
+
+      scrollingScroller.scrollTo(0);
+      expect(scrollingScroller.getTarget()).toBe(0);
+    });
+  });
+
   describe('relative to page scroll position', () => {
     it('initializes from current scroll position', () => {
       const scrollingScroller = new SmoothScroller({

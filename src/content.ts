@@ -17,6 +17,11 @@ const scroller = new SmoothScroller({
 let animating = false;
 let lastTime = 0;
 
+// Key sequence tracking for gg
+let lastKeyTime = 0;
+let lastKey = '';
+const SEQUENCE_TIMEOUT = 500; // ms
+
 function animate(currentTime: number) {
   const deltaMs = lastTime ? currentTime - lastTime : 16;
   lastTime = currentTime;
@@ -43,11 +48,36 @@ function startAnimating() {
 document.addEventListener('keydown', (e) => {
   if (isInputElement(e.target as Element)) return;
 
+  const now = Date.now();
+
+  // Go to bottom (G = shift+g)
+  if (e.key === 'G') {
+    const bottom = document.documentElement.scrollHeight - window.innerHeight;
+    scroller.scrollTo(bottom);
+    startAnimating();
+    lastKey = '';
+    return;
+  }
+
+  // Go to top (gg sequence)
+  if (e.key === 'g') {
+    if (lastKey === 'g' && now - lastKeyTime < SEQUENCE_TIMEOUT) {
+      scroller.scrollTo(0);
+      startAnimating();
+      lastKey = '';
+    } else {
+      lastKey = 'g';
+      lastKeyTime = now;
+    }
+    return;
+  }
+
   // Half page scroll (d/u)
   if (e.key === 'd' || e.key === 'u') {
     const direction = e.key === 'd' ? 1 : -1;
     scroller.scrollBy(direction * window.innerHeight / 2);
     startAnimating();
+    lastKey = '';
     return;
   }
 
@@ -55,6 +85,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'j' || e.key === 'k') {
     scroller.keyDown(e.key);
     startAnimating();
+    lastKey = '';
   }
 });
 

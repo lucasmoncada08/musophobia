@@ -15,17 +15,17 @@ I would like to implement the features in the following order of priority:
 - [ ] musophobia search bar; search open tabs, open url current/new tab
 
 ## Current Slice
-**What:** top and bottom of page shortcut (gg/G)
-**Why:** allows jumping to start/end of page instantly
-**Done when:** user can press gg to go to top of page, G to go to bottom
+**What:** left and right scrolls (h/l)
+**Why:** allows horizontal scrolling on wide pages
+**Done when:** user can press h to scroll left, l to scroll right
 
 ## Next Steps (Ordered)
-1. top and bottom of page shortcut (gg/G)
-2. left and right scrolls (h/l)
+1. left and right scrolls (h/l)
 
 ## Completed
 - [x] smooth scrolling with j/k (see `docs/SMOOTH_SCROLLING.md` for implementation details)
 - [x] half page scrolls with d/u
+- [x] top/bottom of page with gg/G
 
 ## Learning Notes
 - will need to run on every keypress then filter through the used keypress letters

@@ -58,6 +58,11 @@ export class SmoothScroller {
     this.target += amount;
   }
 
+  scrollTo(position: number): void {
+    this.initialize();
+    this.target = position;
+  }
+
   /** Call every frame with time since last frame in milliseconds */
   update(deltaMs: number): void {
     if (!this.initialized) return;
