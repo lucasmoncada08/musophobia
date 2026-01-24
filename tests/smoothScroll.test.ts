@@ -137,6 +137,50 @@ describe('SmoothScroller', () => {
     });
   });
 
+  describe('scrollBy (half page scrolls)', () => {
+    it('adds positive amount to target when scrolling down', () => {
+      scroller.scrollBy(500);
+      expect(scroller.getTarget()).toBe(500);
+    });
+
+    it('adds negative amount to target when scrolling up', () => {
+      scroller.scrollBy(-500);
+      expect(scroller.getTarget()).toBe(-500);
+    });
+
+    it('accumulates multiple scrollBy calls', () => {
+      scroller.scrollBy(300);
+      scroller.scrollBy(300);
+      scroller.scrollBy(-100);
+      expect(scroller.getTarget()).toBe(500);
+    });
+
+    it('uses smooth animation after scrollBy', () => {
+      scroller.scrollBy(100);
+
+      // Should animate toward target
+      expect(scroller.isAnimating()).toBe(true);
+
+      scroller.update(16);
+      expect(mockScrollTo).toHaveBeenCalled();
+      const scrolledTo = mockScrollTo.mock.calls[0][0];
+      expect(scrolledTo).toBeCloseTo(100 * LERP_FACTOR, 1);
+    });
+
+    it('works with existing scroll position', () => {
+      const scrollingScroller = new SmoothScroller({
+        scrollTo: mockScrollTo,
+        getScrollY: () => 1000,
+        tapAmount: TAP_AMOUNT,
+        holdVelocity: HOLD_VELOCITY,
+        lerpFactor: LERP_FACTOR,
+      });
+
+      scrollingScroller.scrollBy(500);
+      expect(scrollingScroller.getTarget()).toBe(1500);
+    });
+  });
+
   describe('relative to page scroll position', () => {
     it('initializes from current scroll position', () => {
       const scrollingScroller = new SmoothScroller({

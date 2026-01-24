@@ -42,10 +42,20 @@ function startAnimating() {
 
 document.addEventListener('keydown', (e) => {
   if (isInputElement(e.target as Element)) return;
-  if (e.key !== 'j' && e.key !== 'k') return;
 
-  scroller.keyDown(e.key);
-  startAnimating();
+  // Half page scroll (d/u)
+  if (e.key === 'd' || e.key === 'u') {
+    const direction = e.key === 'd' ? 1 : -1;
+    scroller.scrollBy(direction * window.innerHeight / 2);
+    startAnimating();
+    return;
+  }
+
+  // Line scroll (j/k)
+  if (e.key === 'j' || e.key === 'k') {
+    scroller.keyDown(e.key);
+    startAnimating();
+  }
 });
 
 document.addEventListener('keyup', (e) => {
