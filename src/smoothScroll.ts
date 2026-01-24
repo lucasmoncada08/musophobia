@@ -1,6 +1,6 @@
 interface SmoothScrollerConfig {
-  scrollTo: (y: number) => void;
-  getScrollY: () => number;
+  scrollTo: (position: number) => void;
+  getScroll: () => number;
   /** Minimum scroll distance for a single tap (px) */
   tapAmount: number;
   /** Scroll velocity while holding key (px per second) */
@@ -22,15 +22,23 @@ export class SmoothScroller {
 
   private initialize(): void {
     if (!this.initialized) {
-      const scrollY = this.config.getScrollY();
-      this.currentPosition = scrollY;
-      this.target = scrollY;
+      const scroll = this.config.getScroll();
+      this.currentPosition = scroll;
+      this.target = scroll;
       this.initialized = true;
     }
   }
 
+  private getDirection(key: string): -1 | 0 | 1 {
+    // Positive: j (down), l (right)
+    // Negative: k (up), h (left)
+    if (key === 'j' || key === 'l') return 1;
+    if (key === 'k' || key === 'h') return -1;
+    return 0;
+  }
+
   keyDown(key: string): void {
-    const direction = key === 'j' ? 1 : key === 'k' ? -1 : 0;
+    const direction = this.getDirection(key);
     if (direction === 0) return;
 
     this.initialize();
@@ -44,7 +52,7 @@ export class SmoothScroller {
   }
 
   keyUp(key: string): void {
-    const direction = key === 'j' ? 1 : key === 'k' ? -1 : 0;
+    const direction = this.getDirection(key);
     if (direction === 0) return;
 
     // Only clear if releasing the currently held direction

@@ -13,7 +13,7 @@ describe('SmoothScroller', () => {
     mockScrollTo = vi.fn<(y: number) => void>();
     scroller = new SmoothScroller({
       scrollTo: mockScrollTo,
-      getScrollY: () => 0,
+      getScroll: () => 0,
       tapAmount: TAP_AMOUNT,
       holdVelocity: HOLD_VELOCITY,
       lerpFactor: LERP_FACTOR,
@@ -170,7 +170,7 @@ describe('SmoothScroller', () => {
     it('works with existing scroll position', () => {
       const scrollingScroller = new SmoothScroller({
         scrollTo: mockScrollTo,
-        getScrollY: () => 1000,
+        getScroll: () => 1000,
         tapAmount: TAP_AMOUNT,
         holdVelocity: HOLD_VELOCITY,
         lerpFactor: LERP_FACTOR,
@@ -208,7 +208,7 @@ describe('SmoothScroller', () => {
     it('works when already scrolled', () => {
       const scrollingScroller = new SmoothScroller({
         scrollTo: mockScrollTo,
-        getScrollY: () => 500,
+        getScroll: () => 500,
         tapAmount: TAP_AMOUNT,
         holdVelocity: HOLD_VELOCITY,
         lerpFactor: LERP_FACTOR,
@@ -223,7 +223,7 @@ describe('SmoothScroller', () => {
     it('initializes from current scroll position', () => {
       const scrollingScroller = new SmoothScroller({
         scrollTo: mockScrollTo,
-        getScrollY: () => 500,
+        getScroll: () => 500,
         tapAmount: TAP_AMOUNT,
         holdVelocity: HOLD_VELOCITY,
         lerpFactor: LERP_FACTOR,

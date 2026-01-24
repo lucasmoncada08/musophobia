@@ -6,9 +6,17 @@ const TAP_AMOUNT = 50;         // px per tap
 const HOLD_VELOCITY = 800;     // px per second while holding
 const LERP_FACTOR = 0.2;       // interpolation factor (higher = snappier)
 
-const scroller = new SmoothScroller({
-  scrollTo: (y) => window.scrollTo(0, y),
-  getScrollY: () => window.scrollY,
+const verticalScroller = new SmoothScroller({
+  scrollTo: (y) => window.scrollTo(window.scrollX, y),
+  getScroll: () => window.scrollY,
+  tapAmount: TAP_AMOUNT,
+  holdVelocity: HOLD_VELOCITY,
+  lerpFactor: LERP_FACTOR,
+});
+
+const horizontalScroller = new SmoothScroller({
+  scrollTo: (x) => window.scrollTo(x, window.scrollY),
+  getScroll: () => window.scrollX,
   tapAmount: TAP_AMOUNT,
   holdVelocity: HOLD_VELOCITY,
   lerpFactor: LERP_FACTOR,
@@ -26,10 +34,13 @@ function animate(currentTime: number) {
   const deltaMs = lastTime ? currentTime - lastTime : 16;
   lastTime = currentTime;
 
-  scroller.update(deltaMs);
+  verticalScroller.update(deltaMs);
+  horizontalScroller.update(deltaMs);
 
-  // Continue if still holding or still animating toward target
-  if (scroller.isHolding() || scroller.isAnimating()) {
+  // Continue if either scroller is still holding or animating
+  const vActive = verticalScroller.isHolding() || verticalScroller.isAnimating();
+  const hActive = horizontalScroller.isHolding() || horizontalScroller.isAnimating();
+  if (vActive || hActive) {
     requestAnimationFrame(animate);
   } else {
     animating = false;
@@ -53,7 +64,7 @@ document.addEventListener('keydown', (e) => {
   // Go to bottom (G = shift+g)
   if (e.key === 'G') {
     const bottom = document.documentElement.scrollHeight - window.innerHeight;
-    scroller.scrollTo(bottom);
+    verticalScroller.scrollTo(bottom);
     startAnimating();
     lastKey = '';
     return;
@@ -62,7 +73,7 @@ document.addEventListener('keydown', (e) => {
   // Go to top (gg sequence)
   if (e.key === 'g') {
     if (lastKey === 'g' && now - lastKeyTime < SEQUENCE_TIMEOUT) {
-      scroller.scrollTo(0);
+      verticalScroller.scrollTo(0);
       startAnimating();
       lastKey = '';
     } else {
@@ -75,22 +86,37 @@ document.addEventListener('keydown', (e) => {
   // Half page scroll (d/u)
   if (e.key === 'd' || e.key === 'u') {
     const direction = e.key === 'd' ? 1 : -1;
-    scroller.scrollBy(direction * window.innerHeight / 2);
+    verticalScroller.scrollBy(direction * window.innerHeight / 2);
     startAnimating();
     lastKey = '';
     return;
   }
 
-  // Line scroll (j/k)
+  // Vertical line scroll (j/k)
   if (e.key === 'j' || e.key === 'k') {
-    scroller.keyDown(e.key);
+    verticalScroller.keyDown(e.key);
+    startAnimating();
+    lastKey = '';
+    return;
+  }
+
+  // Horizontal line scroll (h/l)
+  if (e.key === 'h' || e.key === 'l') {
+    horizontalScroller.keyDown(e.key);
     startAnimating();
     lastKey = '';
   }
 });
 
 document.addEventListener('keyup', (e) => {
-  if (e.key !== 'j' && e.key !== 'k') return;
+  // Vertical scroll release (j/k)
+  if (e.key === 'j' || e.key === 'k') {
+    verticalScroller.keyUp(e.key);
+    return;
+  }
 
-  scroller.keyUp(e.key);
+  // Horizontal scroll release (h/l)
+  if (e.key === 'h' || e.key === 'l') {
+    horizontalScroller.keyUp(e.key);
+  }
 });

@@ -15,17 +15,18 @@ I would like to implement the features in the following order of priority:
 - [ ] musophobia search bar; search open tabs, open url current/new tab
 
 ## Current Slice
-**What:** left and right scrolls (h/l)
-**Why:** allows horizontal scrolling on wide pages
-**Done when:** user can press h to scroll left, l to scroll right
+**What:** help menu popup
+**Why:** allows users to see available shortcuts
+**Done when:** user can see a popup with all available keyboard shortcuts
 
 ## Next Steps (Ordered)
-1. left and right scrolls (h/l)
+1. help menu popup for users to see shortcuts
 
 ## Completed
 - [x] smooth scrolling with j/k (see `docs/SMOOTH_SCROLLING.md` for implementation details)
 - [x] half page scrolls with d/u
 - [x] top/bottom of page with gg/G
+- [x] horizontal scrolling with h/l
 
 ## Learning Notes
 - will need to run on every keypress then filter through the used keypress letters
