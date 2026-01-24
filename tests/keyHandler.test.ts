@@ -209,6 +209,7 @@ describe('KeyHandler', () => {
       expect(commands).toContainEqual({ key: 'u', description: 'Half page up' });
       expect(commands).toContainEqual({ key: 'gg', description: 'Go to top' });
       expect(commands).toContainEqual({ key: 'G', description: 'Go to bottom' });
+      expect(commands).toContainEqual({ key: '?', description: 'Show/hide help' });
     });
   });
 
@@ -219,6 +220,52 @@ describe('KeyHandler', () => {
       expect(verticalScroller.isHolding()).toBe(false);
       expect(horizontalScroller.isHolding()).toBe(false);
       expect(animationLoop.start).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('help command', () => {
+    it('calls onHelpToggle when ? is pressed', () => {
+      const onHelpToggle = vi.fn();
+      const handler = new KeyHandler({
+        verticalScroller,
+        horizontalScroller,
+        animationLoop,
+        onHelpToggle,
+      });
+
+      handler.handleKeyDown(createKeyEvent('?'));
+      expect(onHelpToggle).toHaveBeenCalled();
+    });
+
+    it('blocks other commands when help is visible', () => {
+      const isHelpVisible = vi.fn().mockReturnValue(true);
+      const onHelpToggle = vi.fn();
+      const handler = new KeyHandler({
+        verticalScroller,
+        horizontalScroller,
+        animationLoop,
+        onHelpToggle,
+        isHelpVisible,
+      });
+
+      handler.handleKeyDown(createKeyEvent('j'));
+      expect(verticalScroller.isHolding()).toBe(false);
+      expect(animationLoop.start).not.toHaveBeenCalled();
+    });
+
+    it('allows ? when help is visible', () => {
+      const isHelpVisible = vi.fn().mockReturnValue(true);
+      const onHelpToggle = vi.fn();
+      const handler = new KeyHandler({
+        verticalScroller,
+        horizontalScroller,
+        animationLoop,
+        onHelpToggle,
+        isHelpVisible,
+      });
+
+      handler.handleKeyDown(createKeyEvent('?'));
+      expect(onHelpToggle).toHaveBeenCalled();
     });
   });
 });

@@ -1,6 +1,8 @@
 import { SmoothScroller } from './smoothScroll';
 import { AnimationLoop } from './animationLoop';
 import { KeyHandler } from './keyHandler';
+import { HelpMenu } from './helpMenu';
+import { COMMAND_DEFINITIONS } from './commandDefinitions';
 
 // Tuning constants
 const TAP_AMOUNT = 50;
@@ -37,11 +39,16 @@ animationLoop.register((deltaMs) => {
   );
 });
 
+// Create help menu
+const helpMenu = new HelpMenu(COMMAND_DEFINITIONS);
+
 // Create key handler
 const keyHandler = new KeyHandler({
   verticalScroller,
   horizontalScroller,
   animationLoop,
+  onHelpToggle: () => helpMenu.toggle(),
+  isHelpVisible: () => helpMenu.isVisible(),
 });
 
 // Attach event listeners

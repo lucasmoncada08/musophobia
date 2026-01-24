@@ -2,12 +2,15 @@ import { SmoothScroller } from './smoothScroll';
 import { KeySequenceDetector } from './keySequence';
 import { AnimationLoop } from './animationLoop';
 import { isInputElement } from './isInputElement';
+import { COMMAND_DEFINITIONS } from './commandDefinitions';
 
 export interface KeyHandlerConfig {
   verticalScroller: SmoothScroller;
   horizontalScroller: SmoothScroller;
   animationLoop: AnimationLoop;
   sequenceTimeout?: number;
+  onHelpToggle?: () => void;
+  isHelpVisible?: () => boolean;
 }
 
 const HOLD_KEYS = new Set(['j', 'k', 'h', 'l']);
@@ -18,11 +21,15 @@ export class KeyHandler {
   private animationLoop: AnimationLoop;
   private sequenceDetector: KeySequenceDetector;
   private commands = new Map<string, () => void>();
+  private onHelpToggle?: () => void;
+  private isHelpVisible: () => boolean;
 
   constructor(config: KeyHandlerConfig) {
     this.verticalScroller = config.verticalScroller;
     this.horizontalScroller = config.horizontalScroller;
     this.animationLoop = config.animationLoop;
+    this.onHelpToggle = config.onHelpToggle;
+    this.isHelpVisible = config.isHelpVisible ?? (() => false);
     this.sequenceDetector = new KeySequenceDetector({
       timeout: config.sequenceTimeout ?? 500,
     });
@@ -61,6 +68,15 @@ export class KeyHandler {
 
     const key = e.key;
 
+    // Always allow ? to toggle help
+    if (key === '?' && this.onHelpToggle) {
+      this.onHelpToggle();
+      return;
+    }
+
+    // Block all other commands when help is visible
+    if (this.isHelpVisible()) return;
+
     if (this.sequenceDetector.handleKey(key)) return;
 
     const command = this.commands.get(key);
@@ -98,15 +114,6 @@ export class KeyHandler {
   }
 
   getAvailableCommands(): { key: string; description: string }[] {
-    return [
-      { key: 'j', description: 'Scroll down' },
-      { key: 'k', description: 'Scroll up' },
-      { key: 'h', description: 'Scroll left' },
-      { key: 'l', description: 'Scroll right' },
-      { key: 'd', description: 'Half page down' },
-      { key: 'u', description: 'Half page up' },
-      { key: 'gg', description: 'Go to top' },
-      { key: 'G', description: 'Go to bottom' },
-    ];
+    return COMMAND_DEFINITIONS.map(({ key, description }) => ({ key, description }));
   }
 }

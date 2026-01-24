@@ -52,6 +52,7 @@ tests/         # All test files (mirrors src/ structure)
 - `docs/DEVELOPMENT.md` - Current slice, requirements, next steps, learning notes
 - `docs/ARCHITECTURE.md` - System design and component relationships
 - `docs/SMOOTH_SCROLLING.md` - Implementation details for smooth scrolling
+- `docs/COMMANDS.md` - Available keyboard shortcuts reference
 
 ### Source Files (`src/`)
 - `content.ts` - Entry point, wires together subsystems (Facade pattern)
@@ -60,6 +61,8 @@ tests/         # All test files (mirrors src/ structure)
 - `smoothScroll.ts` - Smooth scrolling implementation (Strategy pattern)
 - `animationLoop.ts` - Frame-based animation callbacks (Observer pattern)
 - `isInputElement.ts` - Utility to detect input focus
+- `commandDefinitions.ts` - Single source of truth for command metadata
+- `helpMenu.ts` - Help menu overlay UI
 
 ### Test Files (`tests/`)
 - Mirror src/ structure (e.g., `src/foo.ts` → `tests/foo.test.ts`)
