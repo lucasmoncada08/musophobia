@@ -45,3 +45,31 @@ tests/         # All test files (mirrors src/ structure)
 ## Project
 - Edge browser extension (Manifest V3)
 - Vim-style keyboard navigation
+
+## Repository Reference
+
+### Key Documentation
+- `docs/DEVELOPMENT.md` - Current slice, requirements, next steps, learning notes
+- `docs/ARCHITECTURE.md` - System design and component relationships
+- `docs/SMOOTH_SCROLLING.md` - Implementation details for smooth scrolling
+
+### Source Files (`src/`)
+- `content.ts` - Entry point, wires together subsystems (Facade pattern)
+- `keyHandler.ts` - Key bindings and command dispatch (Command pattern)
+- `keySequence.ts` - Multi-key sequence handling (e.g., `gg`)
+- `smoothScroll.ts` - Smooth scrolling implementation (Strategy pattern)
+- `animationLoop.ts` - Frame-based animation callbacks (Observer pattern)
+- `isInputElement.ts` - Utility to detect input focus
+
+### Test Files (`tests/`)
+- Mirror src/ structure (e.g., `src/foo.ts` → `tests/foo.test.ts`)
+
+### Configuration
+- `manifest.json` - Extension manifest (Manifest V3)
+- `package.json` - Dependencies and scripts (`build`, `dev`, `test`)
+- `tsconfig.json` - TypeScript configuration
+- `vitest.config.ts` - Test runner configuration
+- `webpack.config.js` - Build configuration
+
+### Build Output
+- `dist/` - Compiled extension files
