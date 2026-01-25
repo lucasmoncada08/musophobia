@@ -63,6 +63,9 @@ tests/         # All test files (mirrors src/ structure)
 - `isInputElement.ts` - Utility to detect input focus
 - `commandDefinitions.ts` - Single source of truth for command metadata
 - `helpMenu.ts` - Help menu overlay UI
+- `linkHints.ts` - Link hint mode for keyboard-based element clicking
+- `findClickableElements.ts` - Query DOM for clickable elements in viewport
+- `generateHints.ts` - Generate unique hint labels from character set
 
 ### Test Files (`tests/`)
 - Mirror src/ structure (e.g., `src/foo.ts` → `tests/foo.test.ts`)

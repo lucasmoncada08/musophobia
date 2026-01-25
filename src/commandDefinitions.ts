@@ -1,7 +1,7 @@
 export interface CommandDefinition {
   key: string;
   description: string;
-  category: 'Navigation' | 'Help';
+  category: 'Navigation' | 'Links' | 'Help';
 }
 
 export const COMMAND_DEFINITIONS: CommandDefinition[] = [
@@ -15,6 +15,9 @@ export const COMMAND_DEFINITIONS: CommandDefinition[] = [
   { key: 'u', description: 'Half page up', category: 'Navigation' },
   { key: 'gg', description: 'Go to top', category: 'Navigation' },
   { key: 'G', description: 'Go to bottom', category: 'Navigation' },
+  // Links
+  { key: 'f', description: 'Show link hints', category: 'Links' },
+  { key: 'F', description: 'Show link hints (new tab)', category: 'Links' },
   // Help
   { key: '?', description: 'Show/hide help', category: 'Help' },
 ];

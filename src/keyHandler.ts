@@ -3,11 +3,13 @@ import { KeySequenceDetector } from './keySequence';
 import { AnimationLoop } from './animationLoop';
 import { isInputElement } from './isInputElement';
 import { COMMAND_DEFINITIONS } from './commandDefinitions';
+import { LinkHints } from './linkHints';
 
 export interface KeyHandlerConfig {
   verticalScroller: SmoothScroller;
   horizontalScroller: SmoothScroller;
   animationLoop: AnimationLoop;
+  linkHints?: LinkHints;
   sequenceTimeout?: number;
   onHelpToggle?: () => void;
   isHelpVisible?: () => boolean;
@@ -19,6 +21,7 @@ export class KeyHandler {
   private verticalScroller: SmoothScroller;
   private horizontalScroller: SmoothScroller;
   private animationLoop: AnimationLoop;
+  private linkHints?: LinkHints;
   private sequenceDetector: KeySequenceDetector;
   private commands = new Map<string, () => void>();
   private onHelpToggle?: () => void;
@@ -28,6 +31,7 @@ export class KeyHandler {
     this.verticalScroller = config.verticalScroller;
     this.horizontalScroller = config.horizontalScroller;
     this.animationLoop = config.animationLoop;
+    this.linkHints = config.linkHints;
     this.onHelpToggle = config.onHelpToggle;
     this.isHelpVisible = config.isHelpVisible ?? (() => false);
     this.sequenceDetector = new KeySequenceDetector({
@@ -76,6 +80,21 @@ export class KeyHandler {
 
     // Block all other commands when help is visible
     if (this.isHelpVisible()) return;
+
+    // Delegate to link hints if active
+    if (this.linkHints?.isActive()) {
+      if (this.linkHints.handleKey(key)) return;
+    }
+
+    // Handle link hints activation
+    if (key === 'f' && this.linkHints) {
+      this.linkHints.activate(false);
+      return;
+    }
+    if (key === 'F' && this.linkHints) {
+      this.linkHints.activate(true);
+      return;
+    }
 
     if (this.sequenceDetector.handleKey(key)) return;
 
