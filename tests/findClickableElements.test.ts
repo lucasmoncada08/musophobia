@@ -171,6 +171,109 @@ describe('findClickableElements', () => {
       const elements = findClickableElements();
       expect(elements).toContain(span);
     });
+
+    it('finds elements with role=menuitem', () => {
+      const li = document.createElement('li');
+      li.setAttribute('role', 'menuitem');
+      li.textContent = 'Menu Item';
+      container.appendChild(li);
+      mockBoundingRect(li, { top: 10, left: 10, width: 100, height: 30 });
+
+      const elements = findClickableElements();
+      expect(elements).toContain(li);
+    });
+
+    it('finds elements with role=option', () => {
+      const div = document.createElement('div');
+      div.setAttribute('role', 'option');
+      div.textContent = 'Option';
+      container.appendChild(div);
+      mockBoundingRect(div, { top: 10, left: 10, width: 100, height: 30 });
+
+      const elements = findClickableElements();
+      expect(elements).toContain(div);
+    });
+
+    it('finds elements with role=tab', () => {
+      const div = document.createElement('div');
+      div.setAttribute('role', 'tab');
+      div.textContent = 'Tab';
+      container.appendChild(div);
+      mockBoundingRect(div, { top: 10, left: 10, width: 100, height: 30 });
+
+      const elements = findClickableElements();
+      expect(elements).toContain(div);
+    });
+
+    it('finds elements with role=switch', () => {
+      const div = document.createElement('div');
+      div.setAttribute('role', 'switch');
+      div.textContent = 'Toggle';
+      container.appendChild(div);
+      mockBoundingRect(div, { top: 10, left: 10, width: 50, height: 30 });
+
+      const elements = findClickableElements();
+      expect(elements).toContain(div);
+    });
+  });
+
+  describe('onclick detection', () => {
+    it('finds elements with onclick attribute', () => {
+      const div = document.createElement('div');
+      div.setAttribute('onclick', 'handleClick()');
+      div.textContent = 'Clickable Div';
+      container.appendChild(div);
+      mockBoundingRect(div, { top: 10, left: 10, width: 100, height: 30 });
+
+      const elements = findClickableElements();
+      expect(elements).toContain(div);
+    });
+  });
+
+  describe('cursor pointer detection', () => {
+    it('finds div elements with cursor:pointer style', () => {
+      const div = document.createElement('div');
+      div.textContent = 'Custom Clickable';
+      div.style.cursor = 'pointer';
+      container.appendChild(div);
+      mockBoundingRect(div, { top: 10, left: 10, width: 100, height: 30 });
+
+      const elements = findClickableElements();
+      expect(elements).toContain(div);
+    });
+
+    it('finds span elements with cursor:pointer style', () => {
+      const span = document.createElement('span');
+      span.textContent = 'Clickable Span';
+      span.style.cursor = 'pointer';
+      container.appendChild(span);
+      mockBoundingRect(span, { top: 10, left: 10, width: 100, height: 30 });
+
+      const elements = findClickableElements();
+      expect(elements).toContain(span);
+    });
+
+    it('does not find elements without cursor:pointer', () => {
+      const div = document.createElement('div');
+      div.textContent = 'Not Clickable';
+      container.appendChild(div);
+      mockBoundingRect(div, { top: 10, left: 10, width: 100, height: 30 });
+
+      const elements = findClickableElements();
+      expect(elements).not.toContain(div);
+    });
+
+    it('does not duplicate elements that match both selectors and cursor:pointer', () => {
+      const button = document.createElement('button');
+      button.textContent = 'Button';
+      button.style.cursor = 'pointer';
+      container.appendChild(button);
+      mockBoundingRect(button, { top: 10, left: 10, width: 100, height: 30 });
+
+      const elements = findClickableElements();
+      const buttonOccurrences = elements.filter((el) => el === button);
+      expect(buttonOccurrences.length).toBe(1);
+    });
   });
 
   describe('tabindex detection', () => {

@@ -68,9 +68,16 @@ export class KeyHandler {
   }
 
   handleKeyDown(e: KeyboardEvent): void {
-    if (isInputElement(e.target as Element)) return;
-
     const key = e.key;
+
+    // Allow Escape to blur input elements
+    if (isInputElement(e.target as Element)) {
+      if (key === 'Escape') {
+        (e.target as HTMLElement).blur();
+        e.preventDefault();
+      }
+      return;
+    }
 
     // Always allow ? to toggle help
     if (key === '?' && this.onHelpToggle) {
@@ -83,7 +90,10 @@ export class KeyHandler {
 
     // Delegate to link hints if active
     if (this.linkHints?.isActive()) {
-      if (this.linkHints.handleKey(key)) return;
+      if (this.linkHints.handleKey(key)) {
+        e.preventDefault();
+        return;
+      }
     }
 
     // Handle link hints activation

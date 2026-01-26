@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { KeyHandler } from '../src/keyHandler';
 import { SmoothScroller } from '../src/smoothScroll';
 import { AnimationLoop } from '../src/animationLoop';
+import { LinkHints } from '../src/linkHints';
 
 describe('KeyHandler', () => {
   let keyHandler: KeyHandler;
@@ -52,10 +53,15 @@ describe('KeyHandler', () => {
     vi.unstubAllGlobals();
   });
 
-  function createKeyEvent(key: string, target: Element | null = null): KeyboardEvent {
+  function createKeyEvent(
+    key: string,
+    target: Element | null = null,
+    preventDefault = vi.fn()
+  ): KeyboardEvent {
     return {
       key,
       target: target ?? { tagName: 'DIV' },
+      preventDefault,
     } as unknown as KeyboardEvent;
   }
 
@@ -195,6 +201,43 @@ describe('KeyHandler', () => {
       expect(verticalScroller.isHolding()).toBe(false);
       expect(animationLoop.start).not.toHaveBeenCalled();
     });
+
+    it('blurs input element on Escape key', () => {
+      const blur = vi.fn();
+      const inputElement = { tagName: 'INPUT', blur } as unknown as Element;
+      const preventDefault = vi.fn();
+
+      keyHandler.handleKeyDown(createKeyEvent('Escape', inputElement, preventDefault));
+
+      expect(blur).toHaveBeenCalled();
+      expect(preventDefault).toHaveBeenCalled();
+    });
+
+    it('blurs textarea element on Escape key', () => {
+      const blur = vi.fn();
+      const textareaElement = { tagName: 'TEXTAREA', blur } as unknown as Element;
+      const preventDefault = vi.fn();
+
+      keyHandler.handleKeyDown(createKeyEvent('Escape', textareaElement, preventDefault));
+
+      expect(blur).toHaveBeenCalled();
+      expect(preventDefault).toHaveBeenCalled();
+    });
+
+    it('blurs contenteditable element on Escape key', () => {
+      const blur = vi.fn();
+      const editableElement = {
+        tagName: 'DIV',
+        isContentEditable: true,
+        blur,
+      } as unknown as Element;
+      const preventDefault = vi.fn();
+
+      keyHandler.handleKeyDown(createKeyEvent('Escape', editableElement, preventDefault));
+
+      expect(blur).toHaveBeenCalled();
+      expect(preventDefault).toHaveBeenCalled();
+    });
   });
 
   describe('getAvailableCommands', () => {
@@ -220,6 +263,45 @@ describe('KeyHandler', () => {
       expect(verticalScroller.isHolding()).toBe(false);
       expect(horizontalScroller.isHolding()).toBe(false);
       expect(animationLoop.start).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('link hints integration', () => {
+    it('calls preventDefault when link hints handles a key', () => {
+      const linkHints = new LinkHints();
+      vi.spyOn(linkHints, 'isActive').mockReturnValue(true);
+      vi.spyOn(linkHints, 'handleKey').mockReturnValue(true);
+
+      const handler = new KeyHandler({
+        verticalScroller,
+        horizontalScroller,
+        animationLoop,
+        linkHints,
+      });
+
+      const preventDefault = vi.fn();
+      handler.handleKeyDown(createKeyEvent('s', null, preventDefault));
+
+      expect(linkHints.handleKey).toHaveBeenCalledWith('s');
+      expect(preventDefault).toHaveBeenCalled();
+    });
+
+    it('does not call preventDefault when link hints does not handle key', () => {
+      const linkHints = new LinkHints();
+      vi.spyOn(linkHints, 'isActive').mockReturnValue(true);
+      vi.spyOn(linkHints, 'handleKey').mockReturnValue(false);
+
+      const handler = new KeyHandler({
+        verticalScroller,
+        horizontalScroller,
+        animationLoop,
+        linkHints,
+      });
+
+      const preventDefault = vi.fn();
+      handler.handleKeyDown(createKeyEvent('x', null, preventDefault));
+
+      expect(preventDefault).not.toHaveBeenCalled();
     });
   });
 

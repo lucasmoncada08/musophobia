@@ -19,8 +19,19 @@ const CLICKABLE_SELECTORS = [
   'summary',
   '[role="button"]',
   '[role="link"]',
+  '[role="menuitem"]',
+  '[role="option"]',
+  '[role="tab"]',
+  '[role="switch"]',
+  '[role="checkbox"]',
+  '[role="radio"]',
+  '[role="combobox"]',
+  '[onclick]',
   '[tabindex]',
 ].join(',');
+
+// Elements commonly styled as clickable but lacking semantic clickable attributes
+const CURSOR_POINTER_CANDIDATES = 'div, span, li, p, h1, h2, h3, h4, h5, h6, label, img, svg';
 
 function isVisible(element: HTMLElement): boolean {
   const style = window.getComputedStyle(element);
@@ -54,12 +65,19 @@ function hasValidTabindex(element: HTMLElement): boolean {
   return parseInt(tabindex, 10) >= 0;
 }
 
+function hasCursorPointer(element: HTMLElement): boolean {
+  const style = window.getComputedStyle(element);
+  return style.cursor === 'pointer';
+}
+
 export function findClickableElements(): HTMLElement[] {
-  const elements = document.querySelectorAll<HTMLElement>(CLICKABLE_SELECTORS);
   const seen = new Set<HTMLElement>();
   const result: HTMLElement[] = [];
 
-  for (const element of elements) {
+  // First pass: elements with explicit clickable attributes
+  const explicitElements = document.querySelectorAll<HTMLElement>(CLICKABLE_SELECTORS);
+
+  for (const element of explicitElements) {
     // Skip duplicates
     if (seen.has(element)) continue;
     seen.add(element);
@@ -74,7 +92,8 @@ export function findClickableElements(): HTMLElement[] {
         element.tagName === 'TEXTAREA' ||
         element.tagName === 'SELECT' ||
         element.tagName === 'SUMMARY' ||
-        element.hasAttribute('role');
+        element.hasAttribute('role') ||
+        element.hasAttribute('onclick');
 
       if (!isNaturallyClickable) continue;
     }
@@ -85,6 +104,26 @@ export function findClickableElements(): HTMLElement[] {
     // Skip elements outside viewport
     if (!isInViewport(element)) continue;
 
+    result.push(element);
+  }
+
+  // Second pass: elements with cursor:pointer style (catches custom interactive elements)
+  const cursorCandidates = document.querySelectorAll<HTMLElement>(CURSOR_POINTER_CANDIDATES);
+
+  for (const element of cursorCandidates) {
+    // Skip if already found via explicit selectors
+    if (seen.has(element)) continue;
+
+    // Skip hidden elements (cheap check first)
+    if (!isVisible(element)) continue;
+
+    // Skip elements outside viewport (cheap check)
+    if (!isInViewport(element)) continue;
+
+    // Check cursor style (expensive check, done last)
+    if (!hasCursorPointer(element)) continue;
+
+    seen.add(element);
     result.push(element);
   }
 
